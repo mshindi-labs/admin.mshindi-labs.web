@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 
-import { DataTable } from '../../ui/data-table';
+import { DataTable } from '../../components/data-table';
 import { columns } from './columns';
 import { SearchSelect } from '@/components/search-select';
 import type { SearchSelectOption } from '@/components/search-select';

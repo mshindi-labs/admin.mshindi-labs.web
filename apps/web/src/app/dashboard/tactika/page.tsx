@@ -1,21 +1,11 @@
-import { PredictionsTable } from './ui';
+// page redirects to predictions page
+import { redirect } from 'next/navigation';
 
 /**
- * Tactika Predictions Page
+ * Tactika Page
  *
- * Displays a data table of predictions with pagination, sorting, and filtering.
+ * Redirects to the predictions page.
  */
-export default function TactikaPredictionsPage() {
-  return (
-    <div className='container mx-auto py-6 sm:py-8 lg:py-10'>
-      <div className='space-y-6'>
-        <div>
-          <h1 className='text-lg font-bold tracking-tight sm:text-xl'>
-            Tactika Predictions
-          </h1>
-        </div>
-        <PredictionsTable />
-      </div>
-    </div>
-  );
+export default function TactikaPage() {
+  return redirect('/dashboard/tactika/predictions');
 }

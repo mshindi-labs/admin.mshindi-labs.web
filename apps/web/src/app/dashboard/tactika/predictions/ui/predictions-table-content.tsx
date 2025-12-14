@@ -2,14 +2,14 @@
 
 import * as React from 'react';
 
-import { DataTable } from './data-table';
+import { DataTable } from '../../components/data-table';
 import { columns } from './columns';
 
 import { PredictionSortField, SortOrder } from '@/types';
 import { PredictionsTableSkeleton } from './predictions-table-skeleton';
 import { PredictionsTableError } from './predictions-table-error';
 import { PredictionsTableSort } from './predictions-table-sort';
-import { usePredictions } from '../hooks/use-predictions';
+import { usePredictions } from '../../hooks';
 
 /**
  * Predictions table content component

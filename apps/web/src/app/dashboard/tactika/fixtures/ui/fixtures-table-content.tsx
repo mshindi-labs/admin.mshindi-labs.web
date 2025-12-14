@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { DataTable } from '../../ui/data-table';
+import { DataTable } from '../../components/data-table';
 import { columns } from './columns';
 import { FixtureFilters } from './fixture-filters';
 import { FixturesTableSkeleton } from './fixtures-table-skeleton';
