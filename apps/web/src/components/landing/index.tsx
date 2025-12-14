@@ -1,6 +1,6 @@
-import { HeroSection } from "./hero-section";
-import { FeaturesSection } from "./features-section";
 import { CtaSection } from "./cta-section";
+import { FeaturesSection } from "./features-section";
+import { HeroSection } from "./hero-section";
 
 interface LandingPageProps {
 	className?: string;
@@ -16,4 +16,4 @@ export function LandingPage({ className }: LandingPageProps) {
 	);
 }
 
-export { HeroSection, FeaturesSection,  CtaSection };
+export { HeroSection, FeaturesSection, CtaSection };

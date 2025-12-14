@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import {
 	Card,
 	CardContent,
@@ -6,6 +5,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface Feature {
 	title: string;
@@ -143,15 +143,12 @@ const features: Feature[] = [
 export function FeaturesSection({ className }: FeaturesSectionProps) {
 	return (
 		<section
-			className={cn(
-				"px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-24",
-				className
-			)}
+			className={cn("px-4 py-12 sm:px-6 sm:py-16 md:px-8 md:py-24", className)}
 		>
 			<div className="mx-auto max-w-7xl">
 				{/* Section Header */}
 				<div className="mb-12 text-center sm:mb-16 md:mb-20">
-					<h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+					<h2 className="font-bold text-3xl tracking-tight sm:text-4xl md:text-5xl">
 						Everything You Need
 					</h2>
 					<p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground sm:text-xl">
@@ -165,7 +162,7 @@ export function FeaturesSection({ className }: FeaturesSectionProps) {
 					{features.map((feature, index) => (
 						<Card
 							key={index}
-							className="group transition-all hover:shadow-md hover:border-primary/20"
+							className="group transition-all hover:border-primary/20 hover:shadow-md"
 						>
 							<CardHeader>
 								<div className="mb-2 inline-flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
