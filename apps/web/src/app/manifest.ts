@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
 	return {
-		name: "admin-mdhindi-labs",
-		short_name: "admin-mdhindi-labs",
+		name: "admin-mshindi-labs",
+		short_name: "admin-mshindi-labs",
 		description: "my pwa app",
 		start_url: "/new",
 		display: "standalone",

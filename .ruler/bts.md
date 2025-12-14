@@ -1,6 +1,6 @@
 # Better-T-Stack Project Rules
 
-This is a admin-mdhindi-labs project created with Better-T-Stack CLI.
+This is a admin-mshindi-labs project created with Better-T-Stack CLI.
 
 ## Project Structure
 

@@ -14,14 +14,19 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.546.0",
     "next": "^16.0.10",
+    "next-auth": "^5.0.0-beta.29",
     "next-themes": "^0.4.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-hook-form": "^7.65.0",
+    "@hookform/resolvers": "^5.2.2",
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "tw-animate-css": "^1.3.4",
     "babel-plugin-react-compiler": "^1.0.0",
     "@tanstack/react-query": "^5.90.12",
+    "@mshindi-labs/refetch": "^2.0.7",
+    "@radix-ui/react-separator": "^1.1.7",
     "dotenv": "catalog:",
     "zod": "catalog:"
   },
@@ -33,6 +38,6 @@
     "tailwindcss": "^4.1.10",
     "typescript": "catalog:",
     "@tanstack/react-query-devtools": "^5.91.1",
-    "@admin-mdhindi-labs/config": "workspace:*"
+    "@admin-mshindi-labs/config": "workspace:*"
   }
 }

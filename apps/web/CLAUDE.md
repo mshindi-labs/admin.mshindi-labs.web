@@ -5,7 +5,7 @@ the **Next.js web application** in this monorepo.
 
 ## Web App Overview
 
-This is the **web frontend** of the admin-mdhindi-labs monorepo, built with:
+This is the **web frontend** of the admin-mshindi-labs monorepo, built with:
 
 - **Framework**: Next.js 16 with App Router and React 19
 - **Styling**: TailwindCSS 4.x with shadcn/ui component library
@@ -266,7 +266,7 @@ export function Component({
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Page Title - admin-mdhindi-labs',
+  title: 'Page Title - admin-mshindi-labs',
   description: 'Page description for SEO',
 };
 

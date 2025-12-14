@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "admin-mdhindi-labs",
-	description: "admin-mdhindi-labs",
+	title: "Mshindi Labs - Administrative Excellence Platform",
+	description:
+		"Streamline your organization with our modern administrative portal. Built for scale, designed for excellence.",
 };
 
 export default function RootLayout({
@@ -30,9 +31,9 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<Providers>
-					<div className="grid grid-rows-[auto_1fr] h-svh">
+					<div className="flex flex-col h-svh">
 						<Header />
-						{children}
+						<div className="flex-1 overflow-auto">{children}</div>
 					</div>
 				</Providers>
 			</body>
