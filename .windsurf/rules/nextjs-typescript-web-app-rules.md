@@ -1,0 +1,460 @@
+---
+trigger: always_on
+---
+
+# Next.js/TypeScript Web App Rules
+
+You are an expert in Next.js, TypeScript, and modern frontend development.
+
+## Project Overview
+
+This is a web application built with Better-T-Stack:
+
+- **Web Framework**: Next.js 16 with App Router and React 19
+- **Language**: TypeScript with strict mode
+- **Styling**: TailwindCSS 4.x with Linear-inspired design system
+- **UI Libraries**: shadcn/ui components
+- **State Management**: TanStack Query v5, TanStack Form
+- **Build System**: Turborepo with Bun workspaces
+- **Linting**: Biome for formatting and linting
+- **Design Language**: Linear-inspired minimalist design with sophisticated theming
+
+## Key Principles
+
+### Mobile-First Web Development
+
+**Always design and develop for mobile first (320px+), then progressively enhance for larger screens.**
+
+- Start with the mobile experience as the foundation
+- Use Tailwind's mobile-first breakpoint system: `sm:` (640px+), `md:` (768px+), `lg:` (1024px+), `xl:` (1280px+)
+- Design touch-friendly interfaces with adequate tap targets (minimum 44px)
+- Consider thumb-reachable navigation zones and ergonomic interactions
+- Optimize for slower mobile connections and limited bandwidth
+- Test on actual mobile devices throughout development
+
+#### Mobile-First Responsive Patterns
+
+```typescript
+// ✅ Mobile-first approach (preferred)
+<div className="
+  flex flex-col space-y-4              // Mobile: vertical layout
+  sm:flex-row sm:space-y-0 sm:space-x-4 // Small+: horizontal layout
+  md:space-x-6                        // Medium+: more spacing
+">
+  <h1 className="text-xl sm:text-2xl md:text-3xl">Title</h1>
+  <button className="w-full sm:w-auto">Action</button>
+</div>
+
+// ❌ Desktop-first approach (avoid)
+<div className="flex-row space-x-6 md:flex-col md:space-x-0">
+```
+
+### Code Organization & Architecture
+
+- Follow monorepo architecture with clear separation
+- Maintain consistent patterns and naming conventions
+- Keep platform-specific code isolated within `apps/web/`
+- Share utilities and types through root workspace dependencies when applicable
+- Use existing project structure and conventions established in the codebase
+- **Feature-Led Component Structure**: Organize components by feature/page rather than type for better scalability
+  - Group related components in feature directories (e.g., `components/landing/`, `components/dashboard/`)
+  - Use `index.ts` files to create clean public APIs for each feature
+  - Keep global/shared components at the root level (e.g., `components/header.tsx`)
+  - This approach scales better for applications with hundreds of pages and complex features
+
+### Next.js/React Best Practices
+
+- **Mobile-First Development**: Always design and develop for mobile first (320px+), then progressively enhance for larger screens
+- Use Tailwind's mobile-first breakpoint system (`sm:`, `md:`, `lg:`, `xl:`) for responsive design
+- Use App Router with proper server and client component patterns
+- Implement data fetching with TanStack Query for client-side state management
+- Apply shadcn/ui components for consistent UI patterns with mobile-first responsive behavior
+- Use next-themes for dark/light mode implementation
+- Follow React 19 concurrent features and best practices
+- Implement proper SEO with Next.js metadata API
+- Use proper TypeScript interfaces for all component props
+- Design touch-friendly interfaces with adequate tap targets (min 44px)
+- Optimize for mobile performance and slower connections
+
+### TypeScript Standards
+
+- Always declare explicit types for components, functions, parameters, and return values
+- Avoid `any` type - create proper interfaces/types instead
+- Use strict TypeScript configuration
+- Prefer interfaces over types for component props and object definitions
+- Create shared types in workspace root when needed
+- Import types with `import type` when possible for better tree-shaking
+- Use proper generic types for reusable components and hooks
+
+### Styling & Design System (Linear-Inspired)
+
+- **Linear Design Philosophy**: Implement Linear's sophisticated, minimalist design language
+- **Color Palette**:
+  - Primary: #0ea5e9 (Linear's signature blue)
+  - Gray scale: Refined 50-950 range with semantic naming
+  - Text hierarchy: text-primary (#09090b), text-secondary (#52525b), text-tertiary (#a1a1aa)
+  - Status colors: success (#22c55e), error (#ef4444), warning (#f97316)
+- **Typography**: Inter Variable font with optimized letter spacing and line heights
+- **Theme System**:
+  - Smooth transitions (0.2s ease) between light/dark modes
+  - Automatic system theme detection with manual toggle
+  - Consistent CSS custom properties
+- **Spacing**: 8px base unit system for consistent rhythm
+- **Border Radius**: 6px default for Linear's subtle, modern aesthetic
+- **Shadows & Elevation**: Subtle depth following Linear's elevation system
+- **Interactive States**: Proper hover, active, and focus states with Linear's interaction patterns
+
+### File & Naming Conventions
+
+- Use kebab-case for file and directory names
+- Use PascalCase for components, types, and interfaces
+- Use camelCase for variables, functions, and props
+- Use SCREAMING_SNAKE_CASE for constants and environment variables
+- Component files: `component-name.tsx`
+- Hook files: `use-hook-name.ts`
+- Utility files: `utility-name.ts`
+- Type files: `types.ts` or `component-name.types.ts`
+- Test files: `component-name.test.tsx`
+
+### Component Architecture
+
+- Create reusable components with proper TypeScript interfaces
+- Use composition patterns over prop drilling
+- Implement proper error boundaries where needed
+- Follow single responsibility principle
+- Use custom hooks for complex logic extraction
+- Apply proper memoization (`React.memo`, `useMemo`, `useCallback`) when needed
+- Keep components focused and maintainable
+
+### State Management Patterns
+
+- Use TanStack Query for server state management and caching
+- Implement proper cache invalidation and optimistic updates
+- Use React state (`useState`, `useReducer`) for local component state
+- Apply proper loading, error, and success states for async operations
+- Follow established patterns for form handling with TanStack Form
+- Use Zod for form validation and type safety
+
+### API Integration
+
+- Use TanStack Query for all API interactions
+- Implement proper error handling with try-catch blocks
+- Create consistent API response types and error formats
+- Use environment variables for API endpoints and configuration
+- Implement proper request/response interceptors if needed
+- Handle network errors and offline states gracefully
+- Use proper query keys for cache management
+
+### Error Handling
+
+- Implement error boundaries in React components where appropriate
+- Use proper error states in queries and mutations
+- Provide meaningful error messages to users
+- Log errors appropriately for debugging purposes
+- Handle network failures and timeout scenarios
+- Implement retry mechanisms for failed requests
+- Use consistent error handling patterns
+
+### Performance Optimization
+
+- Use React.memo for components with expensive renders
+- Implement proper code splitting with dynamic imports
+- Optimize images with Next.js Image component
+- Use proper caching strategies with TanStack Query
+- Implement virtualization for long lists
+- Monitor bundle sizes and optimize build output
+- Use proper lazy loading patterns
+
+### Testing Standards
+
+- Write unit tests for utility functions and custom hooks
+- Write integration tests for complex components
+- Use React Testing Library for component testing
+- Use Jest for test runner and assertions
+- Mock external dependencies and API calls properly
+- Test both success and error scenarios
+- Maintain good test coverage for critical functionality
+
+## Development Commands
+
+### Core Monorepo Commands
+
+- `bun dev` - Start all applications in development mode
+- `bun build` - Build all applications for production
+- `bun check-types` - TypeScript type checking
+- `bun check` - Run Biome linting
+
+### Web App Development
+
+- `bun dev:web` - Start Next.js development server (port 3001)
+- `bun --filter web build` - Build web app for production
+- `bun --filter web start` - Start production web server
+
+## Common Patterns to Follow
+
+### Feature-Led Component Organization
+
+Organize components by feature rather than by type:
+
+```typescript
+// ✅ Feature-based structure (preferred for scalability)
+components/
+├── landing/           # Landing page feature
+│   ├── index.ts       # Main component export
+│   ├── hero-section.tsx
+│   ├── action-buttons.tsx
+│   └── feature-highlight.tsx
+├── dashboard/         # Dashboard feature
+├── header.tsx         # Global components
+└── ui/               # Shared UI primitives
+
+// ❌ Type-based structure (harder to scale)
+components/
+├── buttons/
+├── forms/
+├── sections/
+└── layouts/
+```
+
+### Feature Index Pattern
+
+Each feature exports a main component through `index.ts`:
+
+```typescript
+// components/landing/index.ts
+import { HeroSection } from "./hero-section";
+import { ActionButtons } from "./action-buttons";
+// ... other imports
+
+interface LandingPageProps {
+  className?: string;
+}
+
+export function LandingPage({ className }: LandingPageProps) {
+  return (
+    <div className={className}>
+      <HeroSection title="..." subtitle="..." />
+      <ActionButtons primaryText="..." secondaryText="..." />
+      {/* Compose other feature components */}
+    </div>
+  );
+}
+```
+
+### Page Usage
+
+Import and use entire features with clean imports:
+
+```typescript
+// app/page.tsx
+import { LandingPage } from "@/components/landing";
+export default function Home() {
+  return <LandingPage />;
+}
+```
+
+### React Component Structure
+
+```typescript
+interface ComponentProps {
+  title: string;
+  children?: React.ReactNode;
+  onAction?: () => void;
+  variant?: 'default' | 'secondary';
+}
+
+export function Component({
+  title,
+  children,
+  onAction,
+  variant = 'default'
+}: ComponentProps) {
+  return (
+    <div className={cn(
+      // Mobile-first: stack vertically on mobile, row on larger screens
+      "flex flex-col space-y-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0",
+      variant === 'secondary' && "bg-secondary"
+    )}>
+      <h2 className="text-base sm:text-lg font-semibold">{title}</h2>
+      {onAction && (
+        <Button onClick={onAction} className="w-full sm:w-auto">
+          Action
+        </Button>
+      )}
+      {children}
+    </div>
+  );
+}
+```
+
+### TanStack Query Hook Pattern
+
+```typescript
+// Query hook
+export function useData(params?: DataFilters) {
+  return useQuery({
+    queryKey: ['data', params],
+    queryFn: async () => {
+      const response = await api.get('/data', { params });
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!params, // Only run if params exist
+  });
+}
+
+// Mutation hook
+export function useCreateData() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: CreateDataPayload) => {
+      const response = await api.post('/data', data);
+      return response.data;
+    },
+    onSuccess: (newData) => {
+      // Invalidate and refetch data list
+      queryClient.invalidateQueries({ queryKey: ['data'] });
+      // Optimistically add to cache if needed
+      queryClient.setQueryData(['data', newData.id], newData);
+    },
+    onError: (error) => {
+      toast.error('Failed to create data');
+      console.error('Create data error:', error);
+    },
+  });
+}
+```
+
+### Form Handling Pattern
+
+```typescript
+// Using TanStack Form with Zod validation
+const dataSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  value: z.number().min(0, 'Value must be positive'),
+  description: z.string().optional(),
+});
+
+export function DataForm() {
+  const createData = useCreateData();
+
+  const form = useForm({
+    defaultValues: {
+      title: '',
+      value: 0,
+      description: '',
+    },
+    onSubmit: async ({ value }) => {
+      const validatedData = dataSchema.parse(value);
+      await createData.mutateAsync(validatedData);
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+      className="space-y-4"
+    >
+      <form.Field
+        name="title"
+        children={(field) => (
+          <Input
+            value={field.state.value}
+            onChange={(e) => field.handleChange(e.target.value)}
+            placeholder="Title"
+          />
+        )}
+      />
+      {/* More fields... */}
+      <Button type="submit" disabled={createData.isPending}>
+        {createData.isPending ? 'Creating...' : 'Create'}
+      </Button>
+    </form>
+  );
+}
+```
+
+## File Structure Patterns (Feature-Led)
+
+### Web App Structure
+
+```
+apps/web/
+├── src/
+│   ├── app/                 # Next.js App Router pages
+│   │   ├── page.tsx        # Home page
+│   │   ├── layout.tsx      # Root layout
+│   │   └── dashboard/      # Dashboard pages
+│   ├── components/          # Feature-led component organization
+│   │   ├── landing/         # Landing page feature
+│   │   │   ├── index.ts     # Main LandingPage component export
+│   │   │   ├── hero-section.tsx
+│   │   │   ├── action-buttons.tsx
+│   │   │   └── feature-highlight.tsx
+│   │   ├── dashboard/       # Dashboard feature
+│   │   ├── header.tsx       # Global components
+│   │   └── ui/             # shadcn/ui shared components
+│   ├── lib/                # Utility functions
+│   │   ├── utils.ts        # General utilities
+│   │   └── api.ts          # API client
+│   ├── hooks/              # Custom React hooks
+│   └── types/              # TypeScript type definitions
+```
+
+## Styling Guidelines
+
+### TailwindCSS Patterns - Mobile-First
+
+- **Mobile-First Responsive Design**: Always start with mobile styles, then enhance
+  - Typography: `text-sm sm:text-base md:text-lg lg:text-xl`
+  - Layout: `flex-col sm:flex-row`, `grid-cols-1 sm:grid-cols-2 md:grid-cols-3`
+  - Spacing: `p-4 sm:p-6 md:p-8`, `space-y-2 sm:space-y-4`
+  - Sizing: `w-full sm:w-auto`, `max-w-sm sm:max-w-md md:max-w-lg`
+- Use semantic color classes: `text-foreground`, `bg-background`, `border-border`
+- Apply proper hover/focus states: `hover:bg-accent`, `focus:ring-2`, `active:scale-95`
+- Touch-friendly tap targets: `min-h-[44px] min-w-[44px]` for interactive elements
+
+## Security & Best Practices
+
+- Validate all user inputs using Zod schemas
+- Use environment variables for sensitive configuration
+- Implement proper error boundaries to catch and handle errors
+- Use TypeScript strict mode to catch type-related issues
+- Follow React security best practices (avoid dangerouslySetInnerHTML)
+- Implement proper loading states for better UX
+- Use proper accessibility attributes (aria-labels, roles)
+
+## Performance Considerations
+
+- Use React.memo for components that render frequently with same props
+- Implement proper list virtualization for large datasets
+- Use dynamic imports for code splitting
+- Optimize images with Next.js Image component
+- Use proper caching with TanStack Query
+- Monitor bundle sizes and keep them optimized
+- Use proper debouncing for search inputs
+
+## Existing Patterns to Maintain
+
+- Monorepo structure with apps and packages directories
+- Shared dependencies in root package.json
+- TanStack Query for API state management
+- TanStack Form for complex form handling
+- Consistent theming and design tokens
+- TypeScript strict mode configuration
+- Component composition patterns
+- Custom hook patterns for logic reuse
+- Error handling and loading state patterns
+
+Remember to:
+
+- Follow the existing codebase patterns and conventions
+- Use the established project structure
+- Leverage existing utilities and shared dependencies
+- Maintain consistency with current code style
+- Keep accessibility in mind for all user interactions
+- Optimize for performance while maintaining code readability
