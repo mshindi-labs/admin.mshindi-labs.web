@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 
-import { DataTable } from '../data-table';
-import { columns } from '../columns';
+import { DataTable } from './data-table';
+import { columns } from './columns';
 
 import { PredictionSortField, SortOrder } from '@/types';
 import { PredictionsTableSkeleton } from './predictions-table-skeleton';
