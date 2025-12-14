@@ -1,0 +1,547 @@
+# new-table-data-view
+
+This rule provides a template for scaffolding new table views similar to the
+hot-picks and predictions implementations.
+
+## Pattern Overview
+
+When implementing a new table view that fetches data from an API, follow this
+structure:
+
+```
+feature-name/
+├── page.tsx                    # Main page component
+├── ui/
+│   ├── index.ts                # Public API exports
+│   ├── columns.tsx             # Table column definitions
+│   ├── feature-name-table.tsx  # Main table wrapper
+│   ├── feature-name-table-content.tsx  # Data fetching & state management
+│   ├── feature-name-table-skeleton.tsx # Loading state
+│   └── feature-name-table-error.tsx    # Error state
+└── hooks/
+    └── use-feature-name.ts     # Data fetching hook (if shared)
+```
+
+## Step-by-Step Implementation
+
+### 1. Create TypeScript Types
+
+Create types file: `apps/web/src/types/feature-name.ts`
+
+```typescript
+/**
+ * Feature Name Types
+ *
+ * Type definitions for feature data structures.
+ */
+
+export interface FeatureItem {
+  id: string;
+  // Add your fields here
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FeatureResponse {
+  // Match your API response structure
+  data: FeatureItem[];
+  meta?: {
+    total?: number;
+    page?: number;
+    // Add other meta fields
+  };
+}
+
+export interface FeatureParams {
+  page?: number;
+  limit?: number;
+  // Add query parameters
+  [key: string]: unknown;
+}
+```
+
+**Export from** `apps/web/src/types/index.ts`:
+
+```typescript
+export type {
+  FeatureItem,
+  FeatureResponse,
+  FeatureParams,
+} from './feature-name';
+```
+
+### 2. Add API Endpoint
+
+Update `apps/web/src/constants/endpoints.ts`:
+
+```typescript
+export const API_ENDPOINTS = {
+  // ... existing endpoints
+  FEATURE: {
+    LIST: '/api/feature-name',
+    GET_BY_ID: (id: string) => `/api/feature-name/${id}`,
+  },
+};
+```
+
+### 3. Add Query Key
+
+Update `apps/web/src/lib/tanstack/keys.ts`:
+
+```typescript
+export const queryKeys = {
+  // ... existing keys
+  feature: {
+    all: ['feature'] as const,
+    list: (params?: Record<string, unknown>) =>
+      [...queryKeys.feature.all, 'list', params] as const,
+    detail: (id: string) => [...queryKeys.feature.all, 'detail', id] as const,
+  },
+};
+```
+
+### 4. Create Data Fetching Hook
+
+Create: `apps/web/src/app/dashboard/feature-name/hooks/use-feature-name.ts`
+
+```typescript
+/**
+ * useFeatureName Hook
+ *
+ * Fetches feature data using TanStack Query.
+ */
+
+import { API_ENDPOINTS } from '@/constants/endpoints';
+import { ApiError, createAuthenticatedApi } from '@/lib/api';
+import { queryKeys, queryOptions, useQuery } from '@/lib/tanstack';
+import type { FeatureResponse, FeatureParams } from '@/types/feature-name';
+
+/**
+ * Fetch feature data from API
+ */
+async function fetchFeatureName(
+  params?: FeatureParams,
+): Promise<FeatureResponse> {
+  const api = createAuthenticatedApi();
+  const searchParams = new URLSearchParams();
+
+  if (params?.page) {
+    searchParams.set('page', params.page.toString());
+  }
+  if (params?.limit) {
+    searchParams.set('limit', params.limit.toString());
+  }
+
+  // Add other query parameters
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (key !== 'page' && key !== 'limit' && value !== undefined) {
+      searchParams.set(key, String(value));
+    }
+  });
+
+  const queryString = searchParams.toString();
+  const url = queryString
+    ? `${API_ENDPOINTS.FEATURE.LIST}?${queryString}`
+    : API_ENDPOINTS.FEATURE.LIST;
+
+  const response = await api.get<FeatureResponse>(url);
+
+  if (!response.ok) {
+    throw new ApiError(
+      response.problem || 'Failed to fetch feature data',
+      response.problem ?? 'Failed to fetch feature data',
+      response.status,
+    );
+  }
+
+  if (!response.data) {
+    throw new ApiError('No feature data received');
+  }
+
+  return response.data;
+}
+
+/**
+ * Query options for fetching feature data
+ */
+export function featureNameQueryOptions(params?: FeatureParams) {
+  return queryOptions({
+    queryKey: queryKeys.feature.list(params),
+    queryFn: () => fetchFeatureName(params),
+    staleTime: 30 * 1000, // 30 seconds
+    gcTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+/**
+ * Hook to fetch feature data
+ */
+export function useFeatureName(params?: FeatureParams) {
+  return useQuery(featureNameQueryOptions(params));
+}
+```
+
+Create: `apps/web/src/app/dashboard/feature-name/hooks/index.ts`
+
+```typescript
+export { useFeatureName } from './use-feature-name';
+```
+
+### 5. Create Table Columns
+
+Create: `apps/web/src/app/dashboard/feature-name/ui/columns.tsx`
+
+```typescript
+'use client';
+
+import { type ColumnDef } from '@tanstack/react-table';
+import { MoreHorizontal } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
+import type { FeatureItem } from '@/types/feature-name';
+
+export const columns: ColumnDef<FeatureItem>[] = [
+  {
+    accessorKey: 'id',
+    header: 'ID',
+    cell: ({ row }) => {
+      return (
+        <div className='font-mono text-xs sm:text-sm'>{row.getValue('id')}</div>
+      );
+    },
+  },
+  // Add more columns as needed
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      const item = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' className='h-8 w-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreHorizontal className='h-4 w-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(item.id)}
+            >
+              Copy ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View details</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+```
+
+### 6. Create Table Components
+
+#### Skeleton Component
+
+Create:
+`apps/web/src/app/dashboard/feature-name/ui/feature-name-table-skeleton.tsx`
+
+```typescript
+'use client';
+
+import { Skeleton } from '@/components/ui/skeleton';
+
+/**
+ * Loading skeleton for the feature table
+ */
+export function FeatureNameTableSkeleton() {
+  return (
+    <div className='w-full space-y-4'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <Skeleton className='h-10 w-full max-w-sm' />
+        <Skeleton className='h-10 w-full sm:w-32' />
+      </div>
+      <div className='overflow-hidden rounded-md border'>
+        <div className='space-y-4 p-4'>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className='h-16 w-full' />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+#### Error Component
+
+Create:
+`apps/web/src/app/dashboard/feature-name/ui/feature-name-table-error.tsx`
+
+```typescript
+'use client';
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
+interface FeatureNameTableErrorProps {
+  error: Error | unknown;
+}
+
+/**
+ * Error display component for feature table
+ */
+export function FeatureNameTableError({ error }: FeatureNameTableErrorProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Error</CardTitle>
+        <CardDescription>
+          Failed to load feature data. Please try again later.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className='text-sm text-destructive'>
+          {error instanceof Error ? error.message : 'An unknown error occurred'}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+#### Content Component
+
+Create:
+`apps/web/src/app/dashboard/feature-name/ui/feature-name-table-content.tsx`
+
+```typescript
+'use client';
+
+import * as React from 'react';
+
+import { DataTable } from '../../ui/data-table'; // Adjust path as needed
+import { columns } from './columns';
+
+import { FeatureNameTableSkeleton } from './feature-name-table-skeleton';
+import { FeatureNameTableError } from './feature-name-table-error';
+import { useFeatureName } from '../hooks/use-feature-name';
+
+/**
+ * Feature table content component
+ *
+ * Handles data fetching, state management, and renders the data table.
+ */
+export function FeatureNameTableContent() {
+  const [page, setPage] = React.useState(1);
+  const [limit, setLimit] = React.useState(10);
+
+  const { data, isLoading, error } = useFeatureName({
+    page,
+    limit,
+  });
+
+  if (isLoading) {
+    return <FeatureNameTableSkeleton />;
+  }
+
+  if (error) {
+    return <FeatureNameTableError error={error} />;
+  }
+
+  if (!data) {
+    return <FeatureNameTableSkeleton />;
+  }
+
+  const items = data.data || [];
+  const totalCount = data.meta?.total ?? items.length;
+  const totalPages = data.meta?.page ? Math.ceil(totalCount / limit) : 1;
+  const hasNextPage = page < totalPages;
+  const hasPrevPage = page > 1;
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1); // Reset to first page when changing page size
+  };
+
+  return (
+    <div className='space-y-4'>
+      <DataTable
+        columns={columns}
+        data={items}
+        isLoading={false}
+        totalCount={totalCount}
+        currentPage={page}
+        totalPages={totalPages}
+        hasNextPage={hasNextPage}
+        hasPrevPage={hasPrevPage}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+      />
+    </div>
+  );
+}
+```
+
+#### Main Table Component
+
+Create: `apps/web/src/app/dashboard/feature-name/ui/feature-name-table.tsx`
+
+```typescript
+'use client';
+
+import { FeatureNameTableContent } from './feature-name-table-content';
+
+/**
+ * Feature Name Table Component
+ *
+ * Main component that displays the feature data table with all features:
+ * - Data fetching and state management
+ * - Pagination
+ * - Column visibility
+ */
+export function FeatureNameTable() {
+  return <FeatureNameTableContent />;
+}
+```
+
+### 7. Create UI Index
+
+Create: `apps/web/src/app/dashboard/feature-name/ui/index.ts`
+
+```typescript
+/**
+ * Feature Name UI Components
+ *
+ * Public API for feature table UI components.
+ */
+
+export { FeatureNameTable } from './feature-name-table';
+export { FeatureNameTableContent } from './feature-name-table-content';
+export { FeatureNameTableSkeleton } from './feature-name-table-skeleton';
+export { FeatureNameTableError } from './feature-name-table-error';
+export { columns } from './columns';
+```
+
+### 8. Create Page Component
+
+Create: `apps/web/src/app/dashboard/feature-name/page.tsx`
+
+```typescript
+import { FeatureNameTable } from './ui';
+
+/**
+ * Feature Name Page
+ *
+ * Displays a data table of feature items with pagination and filtering.
+ */
+export default function FeatureNamePage() {
+  return (
+    <div className='container mx-auto py-6 sm:py-8 lg:py-10'>
+      <div className='space-y-6'>
+        <div>
+          <h1 className='text-lg font-bold tracking-tight sm:text-xl'>
+            Feature Name
+          </h1>
+        </div>
+        <FeatureNameTable />
+      </div>
+    </div>
+  );
+}
+```
+
+## Optional: Adding Tabs
+
+If you need tabs (like hot-picks), create:
+`apps/web/src/app/dashboard/feature-name/ui/feature-name-tabs.tsx`
+
+```typescript
+'use client';
+
+import * as React from 'react';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FeatureNameTableContent } from './feature-name-table-content';
+
+const TAB_CONFIG = [
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
+  // Add more tabs as needed
+];
+
+export function FeatureNameTabs() {
+  const [activeTab, setActiveTab] = React.useState('all');
+
+  return (
+    <Tabs value={activeTab} onValueChange={setActiveTab} className='w-full'>
+      <TabsList className='grid w-full grid-cols-2 sm:grid-cols-4'>
+        {TAB_CONFIG.map((tab) => (
+          <TabsTrigger
+            key={tab.value}
+            value={tab.value}
+            className='text-xs sm:text-sm'
+          >
+            {tab.label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {TAB_CONFIG.map((tab) => (
+        <TabsContent key={tab.value} value={tab.value} className='mt-6'>
+          <FeatureNameTableContent filter={tab.value} />
+        </TabsContent>
+      ))}
+    </Tabs>
+  );
+}
+```
+
+## Key Principles
+
+1. **DRY**: Reuse `DataTable` component for consistent table behavior
+2. **Separation of Concerns**:
+   - Types in `types/`
+   - Hooks in `hooks/`
+   - UI components in `ui/`
+   - Page in `page.tsx`
+3. **Mobile-First**: Use responsive classes (`sm:`, `md:`, `lg:`)
+4. **Type Safety**: Always define TypeScript types for API responses
+5. **Error Handling**: Always include error and loading states
+6. **Consistent Patterns**: Follow the same structure as existing
+   implementations
+
+## Checklist
+
+- [ ] Create types file and export from `types/index.ts`
+- [ ] Add API endpoint to `constants/endpoints.ts`
+- [ ] Add query keys to `lib/tanstack/keys.ts`
+- [ ] Create hook with query options
+- [ ] Create columns definition
+- [ ] Create skeleton component
+- [ ] Create error component
+- [ ] Create content component (data fetching logic)
+- [ ] Create main table component
+- [ ] Create UI index with exports
+- [ ] Create page component
+- [ ] Test loading, error, and success states

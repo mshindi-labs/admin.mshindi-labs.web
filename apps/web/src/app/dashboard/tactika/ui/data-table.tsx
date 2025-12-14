@@ -31,11 +31,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
-import type { Prediction } from '@/types/prediction';
 
-interface DataTableProps {
-  columns: ColumnDef<Prediction>[];
-  data: Prediction[];
+interface DataTableProps<TData> {
+  columns: ColumnDef<TData>[];
+  data: TData[];
   isLoading?: boolean;
   /**
    * Total count of all records from the API (across all pages).
@@ -68,7 +67,7 @@ interface DataTableProps {
   onPageSizeChange?: (pageSize: number) => void;
 }
 
-export function DataTable({
+export function DataTable<TData>({
   columns,
   data,
   isLoading,
@@ -79,7 +78,7 @@ export function DataTable({
   hasPrevPage,
   onPageChange,
   onPageSizeChange,
-}: DataTableProps) {
+}: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -110,20 +109,74 @@ export function DataTable({
     },
   });
 
+  // Helper to safely get column filter value
+  // Check which column format exists (home_team for TopPick, home_team_name for Prediction, league_name for League)
+  const getAllColumnIds = () => {
+    return table.getAllColumns().map((col) => col.id);
+  };
+
+  const getFilterValue = () => {
+    const columnIds = getAllColumnIds();
+
+    // Try league_name first (for Leagues table)
+    if (columnIds.includes('league_name')) {
+      const column = table.getColumn('league_name');
+      return (column?.getFilterValue() as string) ?? '';
+    }
+
+    // Try TopPick format (home_team)
+    if (columnIds.includes('home_team')) {
+      const column = table.getColumn('home_team');
+      return (column?.getFilterValue() as string) ?? '';
+    }
+
+    // Fallback to Prediction format (home_team_name)
+    if (columnIds.includes('home_team_name')) {
+      const column = table.getColumn('home_team_name');
+      return (column?.getFilterValue() as string) ?? '';
+    }
+
+    return '';
+  };
+
+  // Helper to safely set filter values
+  const setFilterValue = (value: string) => {
+    const columnIds = getAllColumnIds();
+
+    // Support league_name (for Leagues table)
+    if (columnIds.includes('league_name')) {
+      table.getColumn('league_name')?.setFilterValue(value);
+    }
+
+    // Support both Prediction (home_team_name) and TopPick (home_team) formats
+    if (columnIds.includes('home_team')) {
+      table.getColumn('home_team')?.setFilterValue(value);
+      table.getColumn('away_team')?.setFilterValue(value);
+    }
+    if (columnIds.includes('home_team_name')) {
+      table.getColumn('home_team_name')?.setFilterValue(value);
+      table.getColumn('away_team_name')?.setFilterValue(value);
+    }
+  };
+
+  // Get filter placeholder text based on available columns
+  const getFilterPlaceholder = () => {
+    const columnIds = getAllColumnIds();
+    if (columnIds.includes('league_name')) {
+      return 'Filter by league name...';
+    }
+    return 'Filter by team name...';
+  };
+
   return (
     <div className='w-full space-y-4'>
       {/* Filters and Column Visibility */}
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
         <Input
-          placeholder='Filter by team name...'
-          value={
-            (table.getColumn('home_team_name')?.getFilterValue() as string) ??
-            ''
-          }
+          placeholder={getFilterPlaceholder()}
+          value={getFilterValue()}
           onChange={(event) => {
-            const value = event.target.value;
-            table.getColumn('home_team_name')?.setFilterValue(value);
-            table.getColumn('away_team_name')?.setFilterValue(value);
+            setFilterValue(event.target.value);
           }}
           className='max-w-sm'
         />
