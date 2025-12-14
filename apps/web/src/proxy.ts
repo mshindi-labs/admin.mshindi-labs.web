@@ -2,9 +2,9 @@ import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export default auth(async (req) => {
+export async function proxy(request: NextRequest) {
   const session = await auth();
-  const { pathname } = req.nextUrl;
+  const { pathname } = request.nextUrl;
 
   // Define protected routes that require authentication
   const isProtectedRoute = pathname.startsWith('/dashboard');
@@ -12,14 +12,14 @@ export default auth(async (req) => {
 
   // Redirect unauthenticated users trying to access protected routes
   if (isProtectedRoute && !session) {
-    const loginUrl = new URL('/auth/login', req.url);
+    const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Redirect authenticated users away from auth pages
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   const response = NextResponse.next();
@@ -52,7 +52,7 @@ export default auth(async (req) => {
   }
 
   return response;
-});
+}
 
 export const config = {
   matcher: [
