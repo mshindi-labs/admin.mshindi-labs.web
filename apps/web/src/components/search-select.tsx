@@ -234,7 +234,8 @@ export function SearchSelect<T = string>({
     lg: 'h-10 text-base',
   };
 
-  const hasGroups = groupBy && Array.isArray(filteredOptions[0]?.options);
+  const hasGroups =
+    groupBy && filteredOptions.length > 0 && 'options' in filteredOptions[0];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -2,6 +2,7 @@
 
 import { type ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -57,10 +58,21 @@ export const columns: ColumnDef<Prediction>[] = [
     accessorKey: 'fixture_id',
     header: 'Fixture ID',
     cell: ({ row }) => {
+      const fixtureId = row.getValue('fixture_id') as number;
+      if (!fixtureId) {
+        return (
+          <div className='font-mono text-xs sm:text-sm text-muted-foreground'>
+            —
+          </div>
+        );
+      }
       return (
-        <div className='font-mono text-xs sm:text-sm'>
-          {row.getValue('fixture_id')}
-        </div>
+        <Link
+          href={`/dashboard/tactika/predictions/${fixtureId}`}
+          className='font-mono text-xs text-primary underline-offset-4 hover:underline sm:text-sm'
+        >
+          {fixtureId}
+        </Link>
       );
     },
     enableSorting: false, // Server-side sorting handled by sort selector
@@ -370,7 +382,15 @@ export const columns: ColumnDef<Prediction>[] = [
               Copy fixture ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
+            {prediction.fixture_id && (
+              <DropdownMenuItem asChild>
+                <Link
+                  href={`/dashboard/tactika/predictions/${prediction.fixture_id}`}
+                >
+                  View details
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem>View justification</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -10,6 +10,8 @@ export type {
   Prediction,
   PredictionsParams,
   PredictionsResponse,
+  MatchPredictionResponse,
+  MatchPredictionDetails,
 } from './prediction';
 export { PredictionSortField, SortOrder } from './prediction';
 export type {

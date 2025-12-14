@@ -198,3 +198,44 @@ export interface PredictionsParams {
   order?: SortOrder;
   [key: string]: unknown;
 }
+
+/**
+ * Match prediction details
+ */
+export interface MatchPredictionDetails {
+  home_win_score: number;
+  draw_score: number;
+  away_win_score: number;
+  btts_score: number;
+  over_2_5_score: number;
+  under_2_5_score: number;
+  home_expected_goals: number;
+  away_expected_goals: number;
+  home_team: string;
+  away_team: string;
+}
+
+/**
+ * Match prediction response structure
+ */
+export interface MatchPredictionResponse {
+  prediction: {
+    recommended_outcome: string;
+    recommended_probability: number;
+    justification: string;
+    risk_factors: string[];
+    scores: Scores;
+    normalized_scores: NormalizedScores;
+    ranked_outcomes: RankedOutcome[];
+    confidence: Confidence;
+    clean_sheet: CleanSheet;
+    goal_timing: GoalTiming;
+    scoreline_predictions: ScorelinePrediction[];
+    season_context: SeasonContext;
+  };
+  details: MatchPredictionDetails;
+  enhanced: boolean;
+  enhancing: boolean;
+  enhanced_at?: string;
+  message?: string;
+}

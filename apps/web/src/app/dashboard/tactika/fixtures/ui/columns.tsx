@@ -2,6 +2,7 @@
 
 import { type ColumnDef } from '@tanstack/react-table';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
 import type { FixtureItem } from '@/types/fixture';
@@ -52,6 +53,29 @@ function formatDateRelative(dateString: string): string {
 }
 
 export const columns: ColumnDef<FixtureItem>[] = [
+  {
+    accessorKey: 'fixture.id',
+    header: 'Fixture ID',
+    cell: ({ row }) => {
+      const fixtureId = row.original.fixture.id;
+      if (!fixtureId) {
+        return (
+          <div className='font-mono text-xs sm:text-sm text-muted-foreground'>
+            —
+          </div>
+        );
+      }
+      return (
+        <Link
+          href={`/dashboard/tactika/predictions/${fixtureId}`}
+          className='font-mono text-xs text-primary underline-offset-4 hover:underline sm:text-sm'
+        >
+          {fixtureId}
+        </Link>
+      );
+    },
+    enableSorting: false,
+  },
   {
     accessorKey: 'fixture.date',
     header: 'Date & Time',

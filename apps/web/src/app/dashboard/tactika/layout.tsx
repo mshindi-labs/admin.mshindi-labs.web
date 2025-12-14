@@ -3,7 +3,7 @@ import { HorizontalNav, type NavItem } from '@/components/navigation';
 const tactikaNavItems: NavItem[] = [
   {
     label: 'Predictions',
-    href: '/dashboard/tactika',
+    href: '/dashboard/tactika/predictions',
   },
   {
     label: 'Hot Picks',
