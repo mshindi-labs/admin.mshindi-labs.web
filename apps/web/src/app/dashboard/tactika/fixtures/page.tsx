@@ -1,3 +1,10 @@
+import { FixturesTableContent } from './ui/fixtures-table-content';
+
+/**
+ * Fixtures Page
+ *
+ * Displays fixtures with multi-step selection (country → league → round).
+ */
 export default function FixturesPage() {
   return (
     <div className='container mx-auto py-6 sm:py-8 lg:py-10'>
@@ -7,6 +14,7 @@ export default function FixturesPage() {
             Fixtures
           </h1>
         </div>
+        <FixturesTableContent />
       </div>
     </div>
   );

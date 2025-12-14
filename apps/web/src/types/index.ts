@@ -21,3 +21,22 @@ export type {
 } from './top-picks';
 export type { League, LeaguesResponse, LeaguesParams } from './league';
 export type { Country, CountriesResponse, CountriesParams } from './country';
+export type {
+  FixtureRoundsResponse,
+  FixtureRoundsParams,
+} from './fixture-round';
+export type {
+  FixtureItem,
+  FixturesResponse,
+  FixturesParams,
+  FixtureInfo,
+  LeagueInfo,
+  TeamInfo,
+  Teams,
+  Goals,
+  Score,
+  FixtureStatus,
+  FixturePeriods,
+  FixtureVenue,
+  ScorePeriod,
+} from './fixture';
