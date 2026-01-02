@@ -105,25 +105,6 @@ export function BettingRecommendationPopover({
             </div>
           )}
 
-          {/* Eligible Markets */}
-          {recommendation.eligible_markets &&
-            recommendation.eligible_markets.length > 0 && (
-              <div className='space-y-1'>
-                <span className='text-muted-foreground'>Eligible Markets:</span>
-                <div className='flex flex-wrap gap-1'>
-                  {recommendation.eligible_markets.map((market, index) => (
-                    <Badge
-                      key={index}
-                      variant='outline'
-                      className='text-[10px]'
-                    >
-                      {market}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
           {/* Disqualifiers */}
           {recommendation.disqualifiers &&
             recommendation.disqualifiers.length > 0 && (
