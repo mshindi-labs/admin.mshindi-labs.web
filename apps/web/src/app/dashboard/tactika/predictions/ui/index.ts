@@ -9,3 +9,4 @@ export { PredictionsTableContent } from './predictions-table-content';
 export { PredictionsTableSkeleton } from './predictions-table-skeleton';
 export { PredictionsTableError } from './predictions-table-error';
 export { PredictionsTableSort } from './predictions-table-sort';
+export { PredictionsRefreshButton } from './predictions-refresh-button';
