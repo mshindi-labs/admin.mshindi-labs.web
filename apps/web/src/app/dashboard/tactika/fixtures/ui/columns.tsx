@@ -6,6 +6,7 @@ import Link from 'next/link';
 
 import { Badge } from '@/components/ui/badge';
 import type { FixtureItem } from '@/types/fixture';
+import { AddToCartButton } from './add-to-cart-button';
 
 /**
  * Format date to readable format with time
@@ -200,5 +201,20 @@ export const columns: ColumnDef<FixtureItem>[] = [
       const round = row.original.league.round;
       return <div className='text-sm text-muted-foreground'>{round}</div>;
     },
+  },
+  {
+    id: 'actions',
+    header: 'Actions',
+    cell: ({ row }) => {
+      const fixture = row.original;
+      return (
+        <AddToCartButton
+          id={fixture.fixture.id}
+          homeTeam={fixture.teams.home.name}
+          awayTeam={fixture.teams.away.name}
+        />
+      );
+    },
+    enableSorting: false,
   },
 ];

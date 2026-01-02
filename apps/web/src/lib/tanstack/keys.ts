@@ -90,6 +90,18 @@ export const queryKeys = {
           ...queryKeys.tactika.analytics.all(),
           'predictions-top-picks',
         ] as const,
+      jackpotAnalyses: (filters?: Record<string, unknown>) =>
+        [
+          ...queryKeys.tactika.analytics.all(),
+          'jackpot-analyses',
+          filters,
+        ] as const,
+      jackpotAnalysisDetail: (requestId: string) =>
+        [
+          ...queryKeys.tactika.analytics.all(),
+          'jackpot-analysis-detail',
+          requestId,
+        ] as const,
 
       // Daily predictions
       dailyPredictions: {

@@ -22,6 +22,10 @@ export const API_ENDPOINTS = {
         `/tactika/analytics/match-prediction/${fixture_id}`,
       PREDICTIONS: '/tactika/analytics/predictions',
       PREDICTIONS_TOP_PICKS: '/tactika/analytics/predictions/top-picks',
+      COMBO_PREDICTIONS: '/tactika/jackpot/analyze',
+      JACKPOT_ANALYSES: '/tactika/jackpot/analyses',
+      JACKPOT_ANALYSIS_DETAIL: (requestId: string) =>
+        `/tactika/jackpot/analyses/${requestId}`,
 
       // Daily predictions endpoints
       DAILY_PREDICTIONS_TRIGGER: '/tactika/analytics/daily-predictions/trigger',

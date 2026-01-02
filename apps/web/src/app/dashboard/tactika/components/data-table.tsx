@@ -92,9 +92,10 @@ export function DataTable<TData>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    // Disable pagination and sorting models for server-side operations
+    // Enable client-side sorting, but keep pagination server-side
     manualPagination: true,
-    manualSorting: true,
+    manualSorting: false, // Enable client-side sorting
+    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {

@@ -1,4 +1,5 @@
 import { HorizontalNav, type NavItem } from '@/components/navigation';
+import { FixtureCartProvider } from './fixtures/hooks';
 
 const tactikaNavItems: NavItem[] = [
   {
@@ -34,22 +35,24 @@ interface TactikaLayoutProps {
  */
 export default function TactikaLayout({ children }: TactikaLayoutProps) {
   return (
-    <div className='flex flex-col'>
-      {/* Tactika Navigation */}
-      <div className='sticky top-14 z-40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60'>
-        <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
-          <HorizontalNav
-            items={tactikaNavItems}
-            basePath='/dashboard/tactika'
-            variant='underline'
-            size='md'
-            gap='loose'
-          />
+    <FixtureCartProvider>
+      <div className='flex flex-col'>
+        {/* Tactika Navigation */}
+        <div className='sticky top-14 z-40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60'>
+          <div className='container mx-auto px-4 sm:px-6 lg:px-8'>
+            <HorizontalNav
+              items={tactikaNavItems}
+              basePath='/dashboard/tactika'
+              variant='underline'
+              size='md'
+              gap='loose'
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Page Content */}
-      <main className='flex-1'>{children}</main>
-    </div>
+        {/* Page Content */}
+        <main className='flex-1'>{children}</main>
+      </div>
+    </FixtureCartProvider>
   );
 }

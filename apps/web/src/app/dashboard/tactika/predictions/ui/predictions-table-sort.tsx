@@ -25,6 +25,7 @@ const SORT_FIELD_LABELS: Record<PredictionSortField, string> = {
   [PredictionSortField.RECOMMENDED_PROBABILITY]: 'Recommended Probability',
   [PredictionSortField.CONFIDENCE_OVERALL]: 'Confidence Overall',
   [PredictionSortField.CREATED_AT]: 'Created At',
+  [PredictionSortField.FIXTURE_DATE]: 'Fixture Date',
   [PredictionSortField.HOME_TEAM_NAME]: 'Home Team',
   [PredictionSortField.AWAY_TEAM_NAME]: 'Away Team',
   [PredictionSortField.LEAGUE_ID]: 'League ID',
@@ -32,6 +33,7 @@ const SORT_FIELD_LABELS: Record<PredictionSortField, string> = {
   [PredictionSortField.RANKED_OUTCOME_PROBABILITY]:
     'Ranked Outcome Probability',
   [PredictionSortField.RANKED_OUTCOME_CONFIDENCE]: 'Ranked Outcome Confidence',
+  [PredictionSortField.BETTING_RECOMMENDATION]: 'Betting Recommendation',
 };
 
 /**
