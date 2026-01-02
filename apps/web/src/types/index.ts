@@ -42,3 +42,19 @@ export type {
   FixtureVenue,
   ScorePeriod,
 } from './fixture';
+export type {
+  MjpAnalysis,
+  MjpAnalysisResponse,
+  MjpAnalysisParams,
+  MjpAnalysisDetail,
+  MjpQualitySummary,
+  MjpCorrelationAnalysis,
+  MjpCorrelationDetail,
+  MjpStrategy,
+  MjpRecommendation,
+  MjpRecommendationCriterion,
+  MjpPrediction,
+  MjpTopCombination,
+  MjpCombinationFixtureOutcome,
+  MjpPerformance,
+} from './mjp-analysis';

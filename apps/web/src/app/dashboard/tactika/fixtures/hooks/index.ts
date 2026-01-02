@@ -3,3 +3,4 @@ export {
   useFixtureRounds,
   fixtureRoundsQueryOptions,
 } from './use-fixture-rounds';
+export { useFixtureCart, FixtureCartProvider } from './use-fixture-cart';
