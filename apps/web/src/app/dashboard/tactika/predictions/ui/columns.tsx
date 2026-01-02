@@ -118,17 +118,27 @@ export const columns: ColumnDef<Prediction>[] = [
     enableSorting: false, // Server-side sorting handled by sort selector
   },
   {
-    accessorKey: 'recommended_outcome',
-    header: 'Recommended',
+    id: 'recommended_confidence',
+    header: 'Recommended & Confidence',
     cell: ({ row }) => {
       const prediction = row.original;
+      const confidence = prediction.confidence;
       return (
         <div className='flex flex-col space-y-1'>
           <Badge variant={getOutcomeVariant(prediction.recommended_outcome)}>
             {prediction.recommended_outcome}
           </Badge>
-          <div className='text-xs text-muted-foreground'>
-            {prediction.recommended_probability}% probability
+          <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+            <span>{prediction.recommended_probability}%</span>
+            <span>•</span>
+            <Badge
+              variant={getConfidenceVariant(confidence.level)}
+              className='h-4 px-1.5 text-[10px]'
+            >
+              {confidence.level}
+            </Badge>
+            <span>•</span>
+            <span>{confidence.overall}%</span>
           </div>
         </div>
       );
@@ -136,22 +146,34 @@ export const columns: ColumnDef<Prediction>[] = [
     enableSorting: false, // Server-side sorting handled by sort selector
   },
   {
-    accessorKey: 'confidence',
-    header: 'Confidence',
+    id: 'highest_ranked_outcome',
+    header: 'Top Outcome',
     cell: ({ row }) => {
-      const confidence = row.original.confidence;
+      const rankedOutcomes = row.original.ranked_outcomes;
+
+      if (!rankedOutcomes || rankedOutcomes.length === 0) {
+        return <div className='text-xs text-muted-foreground'>—</div>;
+      }
+
+      // Find the highest ranked outcome (rank 1)
+      const topOutcome = rankedOutcomes.find((o) => o.rank === 1);
+
+      if (!topOutcome) {
+        return <div className='text-xs text-muted-foreground'>—</div>;
+      }
+
       return (
-        <div className='flex flex-col space-y-1'>
-          <Badge variant={getConfidenceVariant(confidence.level)}>
-            {confidence.level}
-          </Badge>
+        <div className='flex flex-col space-y-0.5'>
+          <div className='font-medium text-xs sm:text-sm'>
+            {topOutcome.outcome}
+          </div>
           <div className='text-xs text-muted-foreground'>
-            {confidence.overall}% overall
+            {topOutcome.probability}% probability
           </div>
         </div>
       );
     },
-    enableSorting: false, // Server-side sorting handled by sort selector
+    enableSorting: false,
   },
   {
     accessorKey: 'scores',
