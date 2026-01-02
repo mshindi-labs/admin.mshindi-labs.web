@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { DataTable } from '../../components/data-table';
-import { columns } from './columns';
+import { createColumns } from './columns';
 
 import { PredictionSortField, SortOrder } from '@/types';
 import { PredictionsTableSkeleton } from './predictions-table-skeleton';
@@ -68,7 +68,7 @@ export function PredictionsTableContent() {
         onSortChange={handleSortChange}
       />
       <DataTable
-        columns={columns}
+        columns={createColumns()}
         data={predictions}
         isLoading={false}
         totalCount={totalCount}

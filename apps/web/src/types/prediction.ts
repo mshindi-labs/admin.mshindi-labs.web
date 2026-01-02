@@ -199,12 +199,14 @@ export enum PredictionSortField {
   RECOMMENDED_PROBABILITY = 'recommended_probability',
   CONFIDENCE_OVERALL = 'confidence.overall',
   CREATED_AT = 'createdAt',
+  FIXTURE_DATE = 'fixture_date',
   HOME_TEAM_NAME = 'home_team_name',
   AWAY_TEAM_NAME = 'away_team_name',
   LEAGUE_ID = 'league_id',
   SEASON = 'season',
   RANKED_OUTCOME_PROBABILITY = 'ranked_outcome_probability',
   RANKED_OUTCOME_CONFIDENCE = 'ranked_outcome_confidence',
+  BETTING_RECOMMENDATION = 'betting_recommendation',
 }
 
 /**
