@@ -46,6 +46,27 @@ export interface Confidence {
   data_quality: DataQuality;
   variance: Variance;
   reducing_factors: string[];
+  metrics?: {
+    volatility: number;
+    entropy: number;
+    complexity: number;
+  };
+}
+
+export interface RiskFactor {
+  name: string;
+  points: number;
+  reason: string;
+}
+export interface BettingRecommendation {
+  final_decision: string;
+  risk_score: number;
+  hard_stop_triggered: boolean;
+  disqualifiers: string[];
+  eligible_markets: string[];
+  risk_factors: RiskFactor[];
+  summary: string;
+  recommendation_confidence: string;
 }
 
 /**
@@ -122,6 +143,8 @@ export interface SeasonContext {
 export interface Prediction {
   _id: string;
   fixture_id: number;
+  fixture_date: string;
+  fixture_timestamp: number;
   away_expected_goals: number;
   away_team_id: number;
   away_team_name: string;
@@ -147,8 +170,12 @@ export interface Prediction {
   scores: Scores;
   season: number;
   season_context: SeasonContext;
+  venue_city: string;
+  venue_id: number;
+  venue_name: string;
   updatedAt: string;
   enhanced_at?: string;
+  betting_recommendation?: BettingRecommendation;
 }
 
 /**

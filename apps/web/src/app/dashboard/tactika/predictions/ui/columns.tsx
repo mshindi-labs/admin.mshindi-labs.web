@@ -1,20 +1,13 @@
 'use client';
 
 import { type ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import type { Prediction } from '@/types/prediction';
+import { MetricsPopover } from './metrics-popover';
+import { BettingRecommendationPopover } from './betting-recommendation-popover';
 
 /**
  * Format confidence level badge variant
@@ -74,6 +67,29 @@ export const columns: ColumnDef<Prediction>[] = [
           {fixtureId}
         </Link>
       );
+    },
+    enableSorting: false, // Server-side sorting handled by sort selector
+  },
+  {
+    accessorKey: 'fixture_date',
+    header: 'Fixture Date',
+    cell: ({ row }) => {
+      const fixtureDate = row.getValue('fixture_date') as string;
+      if (!fixtureDate) {
+        return (
+          <div className='text-xs sm:text-sm text-muted-foreground'>—</div>
+        );
+      }
+      try {
+        const date = new Date(fixtureDate);
+        return <div className='text-xs sm:text-sm'>{format(date, 'PPp')}</div>;
+      } catch {
+        return (
+          <div className='text-xs sm:text-sm text-muted-foreground'>
+            {fixtureDate}
+          </div>
+        );
+      }
     },
     enableSorting: false, // Server-side sorting handled by sort selector
   },
@@ -141,7 +157,7 @@ export const columns: ColumnDef<Prediction>[] = [
     accessorKey: 'scores',
     header: 'Probabilities',
     cell: ({ row }) => {
-      const scores = row.original.scores;
+      const scores = row.original.normalized_scores;
       return (
         <div className='flex flex-col space-y-0.5 text-xs'>
           <div className='flex items-center justify-between gap-2'>
@@ -161,240 +177,104 @@ export const columns: ColumnDef<Prediction>[] = [
     },
     enableSorting: false,
   },
-  // Ranked Outcomes - Create separate columns for each rank (1-5)
   {
-    id: 'ranked_outcome_1',
-    header: 'Rank 1',
+    id: 'ranked_outcomes',
+    header: 'Ranked Outcomes',
     cell: ({ row }) => {
       const rankedOutcomes = row.original.ranked_outcomes;
-      const outcome = rankedOutcomes?.find((o) => o.rank === 1);
 
-      if (!outcome) {
+      if (!rankedOutcomes || rankedOutcomes.length === 0) {
         return <div className='text-xs text-muted-foreground'>—</div>;
       }
 
+      // Sort by rank to ensure proper order
+      const sortedOutcomes = [...rankedOutcomes].sort(
+        (a, b) => a.rank - b.rank,
+      );
+
+      const items = sortedOutcomes.map((outcome) => ({
+        label: outcome.outcome,
+        value: `${outcome.probability}%`,
+      }));
+
       return (
-        <div className='flex flex-col gap-1'>
-          <div className='font-medium text-xs sm:text-sm'>
-            {outcome.outcome}
-          </div>
-          <div className='flex items-center gap-1.5'>
-            <Badge
-              variant={
-                outcome.confidence >= 75
-                  ? 'default'
-                  : outcome.confidence >= 50
-                  ? 'secondary'
-                  : 'outline'
-              }
-              className='text-[10px] px-1.5 py-0'
-            >
-              {outcome.probability}%
-            </Badge>
-            <span className='text-[10px] text-muted-foreground'>
-              ({outcome.confidence}% conf)
-            </span>
-          </div>
-        </div>
+        <MetricsPopover
+          items={items}
+          triggerLabel={`${sortedOutcomes.length} outcomes`}
+        />
       );
     },
     enableSorting: false,
   },
   {
-    id: 'ranked_outcome_2',
-    header: 'Rank 2',
+    id: 'confidence_metrics',
+    header: 'Confidence Metrics',
     cell: ({ row }) => {
-      const rankedOutcomes = row.original.ranked_outcomes;
-      const outcome = rankedOutcomes?.find((o) => o.rank === 2);
+      const confidence = row.original.confidence;
+      const breakdown = confidence?.breakdown;
+      const metrics = confidence?.metrics;
 
-      if (!outcome) {
+      if (!breakdown && !metrics) {
+        return <div className='text-xs text-muted-foreground'>—</div>;
+      }
+
+      const allMetrics = [
+        ...(breakdown
+          ? [
+              {
+                label: 'Data Sufficiency',
+                value: `${breakdown.data_sufficiency}%`,
+              },
+              {
+                label: 'H2H Reliability',
+                value: `${breakdown.h2h_reliability}%`,
+              },
+              {
+                label: 'Form Stability',
+                value: `${breakdown.form_stability}%`,
+              },
+              {
+                label: 'Predictive Certainty',
+                value: `${breakdown.predictive_certainty}%`,
+              },
+            ]
+          : []),
+        ...(metrics
+          ? [
+              { label: 'Volatility', value: `${metrics.volatility}%` },
+              { label: 'Entropy', value: `${metrics.entropy}%` },
+              { label: 'Complexity', value: `${metrics.complexity}%` },
+            ]
+          : []),
+      ];
+
+      if (allMetrics.length === 0) {
         return <div className='text-xs text-muted-foreground'>—</div>;
       }
 
       return (
-        <div className='flex flex-col gap-1'>
-          <div className='font-medium text-xs sm:text-sm'>
-            {outcome.outcome}
-          </div>
-          <div className='flex items-center gap-1.5'>
-            <Badge
-              variant={
-                outcome.confidence >= 75
-                  ? 'default'
-                  : outcome.confidence >= 50
-                  ? 'secondary'
-                  : 'outline'
-              }
-              className='text-[10px] px-1.5 py-0'
-            >
-              {outcome.probability}%
-            </Badge>
-            <span className='text-[10px] text-muted-foreground'>
-              ({outcome.confidence}% conf)
-            </span>
-          </div>
-        </div>
+        <MetricsPopover
+          items={allMetrics}
+          triggerLabel={`${allMetrics.length} metrics`}
+        />
       );
     },
     enableSorting: false,
   },
   {
-    id: 'ranked_outcome_3',
-    header: 'Rank 3',
+    id: 'betting_recommendation',
+    header: 'Betting Recommendation',
     cell: ({ row }) => {
-      const rankedOutcomes = row.original.ranked_outcomes;
-      const outcome = rankedOutcomes?.find((o) => o.rank === 3);
+      const bettingRecommendation = row.original.betting_recommendation;
 
-      if (!outcome) {
+      if (!bettingRecommendation) {
         return <div className='text-xs text-muted-foreground'>—</div>;
       }
 
       return (
-        <div className='flex flex-col gap-1'>
-          <div className='font-medium text-xs sm:text-sm'>
-            {outcome.outcome}
-          </div>
-          <div className='flex items-center gap-1.5'>
-            <Badge
-              variant={
-                outcome.confidence >= 75
-                  ? 'default'
-                  : outcome.confidence >= 50
-                  ? 'secondary'
-                  : 'outline'
-              }
-              className='text-[10px] px-1.5 py-0'
-            >
-              {outcome.probability}%
-            </Badge>
-            <span className='text-[10px] text-muted-foreground'>
-              ({outcome.confidence}% conf)
-            </span>
-          </div>
-        </div>
+        <BettingRecommendationPopover recommendation={bettingRecommendation} />
       );
     },
     enableSorting: false,
-  },
-  {
-    id: 'ranked_outcome_4',
-    header: 'Rank 4',
-    cell: ({ row }) => {
-      const rankedOutcomes = row.original.ranked_outcomes;
-      const outcome = rankedOutcomes?.find((o) => o.rank === 4);
-
-      if (!outcome) {
-        return <div className='text-xs text-muted-foreground'>—</div>;
-      }
-
-      return (
-        <div className='flex flex-col gap-1'>
-          <div className='font-medium text-xs sm:text-sm'>
-            {outcome.outcome}
-          </div>
-          <div className='flex items-center gap-1.5'>
-            <Badge
-              variant={
-                outcome.confidence >= 75
-                  ? 'default'
-                  : outcome.confidence >= 50
-                  ? 'secondary'
-                  : 'outline'
-              }
-              className='text-[10px] px-1.5 py-0'
-            >
-              {outcome.probability}%
-            </Badge>
-            <span className='text-[10px] text-muted-foreground'>
-              ({outcome.confidence}% conf)
-            </span>
-          </div>
-        </div>
-      );
-    },
-    enableSorting: false,
-  },
-  {
-    id: 'ranked_outcome_5',
-    header: 'Rank 5',
-    cell: ({ row }) => {
-      const rankedOutcomes = row.original.ranked_outcomes;
-      const outcome = rankedOutcomes?.find((o) => o.rank === 5);
-
-      if (!outcome) {
-        return <div className='text-xs text-muted-foreground'>—</div>;
-      }
-
-      return (
-        <div className='flex flex-col gap-1'>
-          <div className='font-medium text-xs sm:text-sm'>
-            {outcome.outcome}
-          </div>
-          <div className='flex items-center gap-1.5'>
-            <Badge
-              variant={
-                outcome.confidence >= 75
-                  ? 'default'
-                  : outcome.confidence >= 50
-                  ? 'secondary'
-                  : 'outline'
-              }
-              className='text-[10px] px-1.5 py-0'
-            >
-              {outcome.probability}%
-            </Badge>
-            <span className='text-[10px] text-muted-foreground'>
-              ({outcome.confidence}% conf)
-            </span>
-          </div>
-        </div>
-      );
-    },
-    enableSorting: false,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const prediction = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(prediction._id)}
-            >
-              Copy prediction ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                navigator.clipboard.writeText(String(prediction.fixture_id))
-              }
-            >
-              Copy fixture ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {prediction.fixture_id && (
-              <DropdownMenuItem asChild>
-                <Link
-                  href={`/dashboard/tactika/predictions/${prediction.fixture_id}`}
-                >
-                  View details
-                </Link>
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem>View justification</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
   },
 ];
